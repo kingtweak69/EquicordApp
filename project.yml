@@ -4,7 +4,6 @@ options:
   bundleIdPrefix: com.kingtweak69
   deploymentTarget:
     iOS: "16.0"
-  createIntermediateGroups: true
 
 settings:
   base:
@@ -31,12 +30,8 @@ targets:
         CFBundleDisplayName: Equicord
         CFBundleName: EquicordApp
         CFBundleShortVersionString: "1.0"
-        CFBundleVersion: "1"
+        CFBundleVersion: "2"
         UILaunchScreen: {}
-        UISupportedInterfaceOrientations:
-          - UIInterfaceOrientationPortrait
-          - UIInterfaceOrientationLandscapeLeft
-          - UIInterfaceOrientationLandscapeRight
         NSMicrophoneUsageDescription: Microphone access for Discord voice channels.
         NSCameraUsageDescription: Camera access for video calls.
         UIBackgroundModes:
@@ -51,6 +46,3 @@ targets:
         CODE_SIGNING_REQUIRED: NO
         CODE_SIGN_IDENTITY: ""
         TARGETED_DEVICE_FAMILY: "1,2"
-
-    scheme:
-      gatherCoverageData: false
