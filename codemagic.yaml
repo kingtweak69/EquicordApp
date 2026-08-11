@@ -3,28 +3,52 @@ workflows:
     name: Build Equicord iOS (.ipa)
     max_build_duration: 30
     instance_type: mac_mini_m1
+
     environment:
-      node: latest
       xcode: latest
+
     scripts:
-      - name: Build Web Bundle & Package
+      - name: Install XcodeGen
         script: |
-          corepack enable
-          pnpm install
-          pnpm buildWeb
-          cp dist/browser.js EquicordApp/equicord.user.js
-      - name: Build Unsigned .ipa
+          set -euo pipefail
+          if ! command -v xcodegen >/dev/null 2>&1; then
+            brew install xcodegen
+          fi
+          xcodegen --version
+
+      - name: Generate Xcode project
         script: |
-          xcodebuild build \
-            -project "EquicordApp.xcodeproj" \
-            -scheme "EquicordApp" \
-            -sdk iphoneos \
-            -configuration Release \
-            CODE_SIGN_IDENTITY="" \
-            CODE_SIGNING_REQUIRED=NO \
-            CODE_SIGNING_ALLOWED=NO
-          mkdir -p Payload
-          mv EquicordApp/build/Release-iphoneos/EquicordApp.app Payload/
-          zip -r EquicordApp.ipa Payload
+          set -euo pipefail
+          cd "$CM_BUILD_DIR"
+          xcodegen generate --spec project.yml
+          test -f EquicordApp.xcodeproj/project.pbxproj
+
+      - name: Build unsigned iOS app
+        script: |
+          set -euo pipefail
+          cd "$CM_BUILD_DIR"
+
+          rm -rf build Payload EquicordApp.ipa
+
+          xcodebuild             -project EquicordApp.xcodeproj             -scheme EquicordApp             -configuration Release             -sdk iphoneos             -derivedDataPath "$CM_BUILD_DIR/build"             CODE_SIGNING_ALLOWED=NO             CODE_SIGNING_REQUIRED=NO             CODE_SIGN_IDENTITY=""             clean build
+
+          APP_PATH="$CM_BUILD_DIR/build/Build/Products/Release-iphoneos/EquicordApp.app"
+
+          if [ ! -d "$APP_PATH" ]; then
+            echo "ERROR: Built .app not found at: $APP_PATH"
+            find "$CM_BUILD_DIR/build" -maxdepth 6 -name "*.app" -print || true
+            exit 1
+          fi
+
+          mkdir -p "$CM_BUILD_DIR/Payload"
+          cp -R "$APP_PATH" "$CM_BUILD_DIR/Payload/"
+
+          cd "$CM_BUILD_DIR"
+          /usr/bin/zip -qry EquicordApp.ipa Payload
+
+          test -f EquicordApp.ipa
+          ls -lh EquicordApp.ipa
+
     artifacts:
-      - "*.ipa"
+      - EquicordApp.ipa
+      - build/Build/Products/Release-iphoneos/*.app
