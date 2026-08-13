@@ -1,77 +1,6 @@
 workflows:
-  ios-equicord:
-    name: Equicord iOS
-    max_build_duration: 60
-    instance_type: mac_mini_m2
-
-    integrations:
-      app_store_connect: codemagic
-
-    environment:
-      xcode: latest
-      ios_signing:
-        distribution_type: ad_hoc
-        bundle_identifier: com.kingtweak69.EquicordApp
-
-    scripts:
-      - name: Install XcodeGen
-        script: |
-          set -euo pipefail
-          if ! command -v xcodegen >/dev/null 2>&1; then
-            brew install xcodegen
-          fi
-
-      - name: Generate Xcode project
-        script: |
-          set -euo pipefail
-          cd "$CM_BUILD_DIR"
-          xcodegen generate --spec project.yml
-          test -f EquicordApp.xcodeproj/project.pbxproj
-
-      - name: Set up iOS code signing
-        script: |
-          set -euo pipefail
-          xcode-project use-profiles
-
-      - name: Build signed IPA
-        script: |
-          set -euo pipefail
-          cd "$CM_BUILD_DIR"
-
-          rm -rf "$CM_BUILD_DIR/build/EquicordApp.xcarchive"
-          rm -rf "$CM_BUILD_DIR/build/ipa"
-          mkdir -p "$CM_BUILD_DIR/build/ipa"
-
-          xcode-project build-ipa \
-            --project "EquicordApp.xcodeproj" \
-            --scheme "EquicordApp" \
-            --archive-path "$CM_BUILD_DIR/build/EquicordApp.xcarchive" \
-            --ipa-directory "$CM_BUILD_DIR/build/ipa"
-
-          IPA_PATH="$(find "$CM_BUILD_DIR/build/ipa" -maxdepth 1 -type f -name '*.ipa' -print -quit)"
-
-          if [ -z "$IPA_PATH" ]; then
-            echo "ERROR: No IPA was produced."
-            find "$CM_BUILD_DIR/build" -maxdepth 3 -type f -print
-            exit 1
-          fi
-
-          if [ "$IPA_PATH" != "$CM_BUILD_DIR/build/ipa/EquicordApp.ipa" ]; then
-            cp "$IPA_PATH" "$CM_BUILD_DIR/build/ipa/EquicordApp.ipa"
-          fi
-
-          echo "========================================"
-          echo "IPA CREATED:"
-          ls -lh "$CM_BUILD_DIR/build/ipa/EquicordApp.ipa"
-          echo "========================================"
-
-    artifacts:
-      - build/ipa/*.ipa
-      - build/EquicordApp.xcarchive
-
-
   ios-equicord-unsigned:
-    name: Equicord iOS (unsigned CI check)
+    name: Equicord iOS (unsigned IPA)
     max_build_duration: 60
     instance_type: mac_mini_m2
 
@@ -111,5 +40,28 @@ workflows:
 
           test -d "$CM_BUILD_DIR/build/Build/Products/Release-iphoneos/EquicordApp.app"
 
+      - name: Package unsigned IPA
+        script: |
+          set -euo pipefail
+
+          APP_PATH="$CM_BUILD_DIR/build/Build/Products/Release-iphoneos/EquicordApp.app"
+
+          rm -rf "$CM_BUILD_DIR/build/ipa"
+          mkdir -p "$CM_BUILD_DIR/build/ipa/Payload"
+
+          cp -R "$APP_PATH" "$CM_BUILD_DIR/build/ipa/Payload/EquicordApp.app"
+
+          rm -rf "$CM_BUILD_DIR/build/ipa/Payload/EquicordApp.app/_CodeSignature"
+          rm -f "$CM_BUILD_DIR/build/ipa/Payload/EquicordApp.app/embedded.mobileprovision"
+
+          cd "$CM_BUILD_DIR/build/ipa"
+          zip -qry EquicordApp-unsigned.ipa Payload
+          rm -rf Payload
+
+          echo "========================================"
+          echo "UNSIGNED IPA CREATED:"
+          ls -lh "$CM_BUILD_DIR/build/ipa/EquicordApp-unsigned.ipa"
+          echo "========================================"
+
     artifacts:
-      - build/Build/Products/Release-iphoneos/EquicordApp.app
+      - build/ipa/*.ipa
