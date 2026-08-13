@@ -1,8 +1,57 @@
 workflows:
-  ios-equicord-build:
-    name: Build Equicord iOS Mobile UI (.ipa)
-    max_build_duration: 30
-    instance_type: mac_mini_m1
+  ios-equicord:
+    name: Equicord iOS
+    max_build_duration: 60
+    instance_type: mac_mini_m2
+
+    integrations:
+      app_store_connect: codemagic
+
+    environment:
+      xcode: latest
+      ios_signing:
+        distribution_type: ad_hoc
+        bundle_identifier: com.kingtweak69.EquicordApp
+
+    scripts:
+      - name: Install XcodeGen
+        script: |
+          set -euo pipefail
+          if ! command -v xcodegen >/dev/null 2>&1; then
+            brew install xcodegen
+          fi
+
+      - name: Generate Xcode project
+        script: |
+          set -euo pipefail
+          cd "$CM_BUILD_DIR"
+          xcodegen generate --spec project.yml
+          test -f EquicordApp.xcodeproj/project.pbxproj
+
+      - name: Set up iOS code signing
+        script: |
+          set -euo pipefail
+          xcode-project use-profiles
+
+      - name: Build signed IPA
+        script: |
+          set -euo pipefail
+          cd "$CM_BUILD_DIR"
+          xcodebuild             -project EquicordApp.xcodeproj             -scheme EquicordApp             -configuration Release             -sdk iphoneos             -archivePath "$CM_BUILD_DIR/build/EquicordApp.xcarchive"             clean archive
+
+          xcodebuild             -exportArchive             -archivePath "$CM_BUILD_DIR/build/EquicordApp.xcarchive"             -exportPath "$CM_BUILD_DIR/ipa"             -exportOptionsPlist "$HOME/export_options.plist"
+
+          test -f "$CM_BUILD_DIR/ipa/EquicordApp.ipa"
+
+    artifacts:
+      - ipa/*.ipa
+      - build/EquicordApp.xcarchive
+      - build/Build/**/*.app
+
+  ios-equicord-unsigned:
+    name: Equicord iOS (unsigned CI check)
+    max_build_duration: 60
+    instance_type: mac_mini_m2
 
     environment:
       xcode: latest
@@ -22,25 +71,13 @@ workflows:
           xcodegen generate --spec project.yml
           test -f EquicordApp.xcodeproj/project.pbxproj
 
-      - name: Build unsigned iOS app
+      - name: Build unsigned app
         script: |
           set -euo pipefail
           cd "$CM_BUILD_DIR"
-          rm -rf build Payload EquicordApp.ipa
-
           xcodebuild             -project EquicordApp.xcodeproj             -scheme EquicordApp             -configuration Release             -sdk iphoneos             -derivedDataPath "$CM_BUILD_DIR/build"             CODE_SIGNING_ALLOWED=NO             CODE_SIGNING_REQUIRED=NO             CODE_SIGN_IDENTITY=""             clean build
 
-          APP_PATH="$CM_BUILD_DIR/build/Build/Products/Release-iphoneos/EquicordApp.app"
-          test -d "$APP_PATH"
-
-          mkdir -p "$CM_BUILD_DIR/Payload"
-          cp -R "$APP_PATH" "$CM_BUILD_DIR/Payload/"
-          cd "$CM_BUILD_DIR"
-          /usr/bin/zip -qry EquicordApp.ipa Payload
-
-          test -f EquicordApp.ipa
-          ls -lh EquicordApp.ipa
+          test -d "$CM_BUILD_DIR/build/Build/Products/Release-iphoneos/EquicordApp.app"
 
     artifacts:
-      - EquicordApp.ipa
-      - build/Build/Products/Release-iphoneos/*.app
+      - build/Build/Products/Release-iphoneos/EquicordApp.app

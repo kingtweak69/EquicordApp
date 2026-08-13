@@ -3,17 +3,19 @@ name: EquicordApp
 options:
   bundleIdPrefix: com.kingtweak69
   deploymentTarget:
-    iOS: "16.0"
+    iOS: "18.0"
+  createIntermediateGroups: true
 
 settings:
   base:
     SWIFT_VERSION: "5.0"
+    IPHONEOS_DEPLOYMENT_TARGET: "18.0"
 
 targets:
   EquicordApp:
     type: application
     platform: iOS
-    deploymentTarget: "16.0"
+    deploymentTarget: "18.0"
 
     sources:
       - path: EquicordApp
@@ -30,7 +32,7 @@ targets:
         CFBundleDisplayName: Equicord
         CFBundleName: EquicordApp
         CFBundleShortVersionString: "1.0"
-        CFBundleVersion: "2"
+        CFBundleVersion: "3"
         UILaunchScreen: {}
         NSMicrophoneUsageDescription: Microphone access for Discord voice channels.
         NSCameraUsageDescription: Camera access for video calls.
@@ -42,7 +44,6 @@ targets:
         PRODUCT_BUNDLE_IDENTIFIER: com.kingtweak69.EquicordApp
         PRODUCT_NAME: EquicordApp
         GENERATE_INFOPLIST_FILE: NO
-        CODE_SIGNING_ALLOWED: NO
-        CODE_SIGNING_REQUIRED: NO
-        CODE_SIGN_IDENTITY: ""
         TARGETED_DEVICE_FAMILY: "1,2"
+        SWIFT_VERSION: "5.0"
+        IPHONEOS_DEPLOYMENT_TARGET: "18.0"
