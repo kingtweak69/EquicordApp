@@ -1,0 +1,215 @@
+// !$*UTF8*$!
+{
+ archiveVersion = 1;
+ classes = {
+ };
+ objectVersion = 56;
+ objects = {
+
+/* Begin PBXBuildFile section */
+ 70AFC6B34AD9457A9C5E6688 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 437905D46722431D933CC0D8; };
+ 628B2804A5194AF1B5B3BFC4 /* EquicordApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D034D152ED94BA4A1B84D74; };
+ 0001BD1CD4D648F285458708 /* WebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 517917859ED04848BF8BA26E; };
+ B2FF08FB7EEB4ECFBEB54708 /* equicord.user.js in Resources */ = {isa = PBXBuildFile; fileRef = 241D0909D2C84FAEB9C4D87B; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+ 437905D46722431D933CC0D8 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+ 9D034D152ED94BA4A1B84D74 /* EquicordApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EquicordApp.swift; sourceTree = "<group>"; };
+ 517917859ED04848BF8BA26E /* WebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebView.swift; sourceTree = "<group>"; };
+ 368F8324D68A415384EB3B59 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+ 241D0909D2C84FAEB9C4D87B /* equicord.user.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = equicord.user.js; sourceTree = "<group>"; };
+ 30219D5913004913B07900E9 /* EquicordApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EquicordApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+ 868B12FF783949848DBC5EDB /* Frameworks */ = {
+  isa = PBXFrameworksBuildPhase;
+  buildActionMask = 2147483647;
+  files = (
+  );
+  runOnlyForDeploymentPostprocessing = 0;
+ };
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+ 010BBE6E6F5F4747B423FDF7 = {
+  isa = PBXGroup;
+  children = (
+   9655D11A4FDA4F1A9B4229B7 /* EquicordApp */,
+   6E3320A12D8A4876BBA503BE /* Products */,
+  );
+  sourceTree = "<group>";
+ };
+ 9655D11A4FDA4F1A9B4229B7 /* EquicordApp */ = {
+  isa = PBXGroup;
+  children = (
+   437905D46722431D933CC0D8 /* ContentView.swift */,
+   9D034D152ED94BA4A1B84D74 /* EquicordApp.swift */,
+   517917859ED04848BF8BA26E /* WebView.swift */,
+   368F8324D68A415384EB3B59 /* Info.plist */,
+   241D0909D2C84FAEB9C4D87B /* equicord.user.js */,
+  );
+  path = EquicordApp;
+  sourceTree = "<group>";
+ };
+ 6E3320A12D8A4876BBA503BE /* Products */ = {
+  isa = PBXGroup;
+  children = (
+   30219D5913004913B07900E9 /* EquicordApp.app */,
+  );
+  name = Products;
+  sourceTree = "<group>";
+ };
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+ 88CBA99E001943CB9AD1DAFB /* EquicordApp */ = {
+  isa = PBXNativeTarget;
+  buildConfigurationList = DB8F78D262114FC5A9104AC7 /* Build configuration list for PBXNativeTarget "EquicordApp" */;
+  buildPhases = (
+   5D4982F8E46F48FB9AB86B87 /* Sources */,
+   AE1C82585BE7488998ED5EFA /* Resources */,
+   868B12FF783949848DBC5EDB /* Frameworks */,
+  );
+  buildRules = (
+  );
+  dependencies = (
+  );
+  name = EquicordApp;
+  productName = EquicordApp;
+  productReference = 30219D5913004913B07900E9 /* EquicordApp.app */;
+  productType = "com.apple.product-type.application";
+ };
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+ 554C0EDDA5D2467B8F3D12C7 /* Project object */ = {
+  isa = PBXProject;
+  attributes = {
+   LastUpgradeCheck = 2600;
+   ORGANIZATIONNAME = "kingtweak69";
+  };
+  buildConfigurationList = 8CA2C6A7369848A7A6D63408 /* Build configuration list for PBXProject "EquicordApp" */;
+  compatibilityVersion = "Xcode 3.2";
+  developmentRegion = en;
+  hasScannedForEncodings = 0;
+  knownRegions = (
+   en,
+   Base,
+  );
+  mainGroup = 010BBE6E6F5F4747B423FDF7;
+  productRefGroup = 6E3320A12D8A4876BBA503BE;
+  projectDirPath = "";
+  projectRoot = "";
+  targets = (
+   88CBA99E001943CB9AD1DAFB /* EquicordApp */,
+  );
+ };
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+ AE1C82585BE7488998ED5EFA /* Resources */ = {
+  isa = PBXResourcesBuildPhase;
+  buildActionMask = 2147483647;
+  files = (
+   B2FF08FB7EEB4ECFBEB54708 /* equicord.user.js in Resources */,
+  );
+  runOnlyForDeploymentPostprocessing = 0;
+ };
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+ 5D4982F8E46F48FB9AB86B87 /* Sources */ = {
+  isa = PBXSourcesBuildPhase;
+  buildActionMask = 2147483647;
+  files = (
+   70AFC6B34AD9457A9C5E6688 /* ContentView.swift in Sources */,
+   628B2804A5194AF1B5B3BFC4 /* EquicordApp.swift in Sources */,
+   0001BD1CD4D648F285458708 /* WebView.swift in Sources */,
+  );
+  runOnlyForDeploymentPostprocessing = 0;
+ };
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+ 0F8B51B63C0F4002814DD81B /* Debug */ = {
+  isa = XCBuildConfiguration;
+  buildSettings = {
+   IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+   SWIFT_VERSION = 5.0;
+  };
+  name = Debug;
+ };
+ 734D00659E244AC687C47E9C /* Release */ = {
+  isa = XCBuildConfiguration;
+  buildSettings = {
+   IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+   SWIFT_VERSION = 5.0;
+  };
+  name = Release;
+ };
+ EEB4F6E74F764E109733882F /* Debug */ = {
+  isa = XCBuildConfiguration;
+  buildSettings = {
+   ALWAYS_SEARCH_USER_PATHS = NO;
+   ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+   CLANG_ENABLE_MODULES = YES;
+   CLANG_ENABLE_OBJC_ARC = YES;
+   CURRENT_PROJECT_VERSION = 3;
+   GENERATE_INFOPLIST_FILE = NO;
+   INFOPLIST_FILE = EquicordApp/Info.plist;
+   IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+   PRODUCT_BUNDLE_IDENTIFIER = com.kingtweak69.EquicordApp;
+   PRODUCT_NAME = "$(TARGET_NAME)";
+   SDKROOT = iphoneos;
+   SWIFT_VERSION = 5.0;
+   TARGETED_DEVICE_FAMILY = "1,2";
+  };
+  name = Debug;
+ };
+ 8C6B46E303794CBCAFEE7BE1 /* Release */ = {
+  isa = XCBuildConfiguration;
+  buildSettings = {
+   ALWAYS_SEARCH_USER_PATHS = NO;
+   ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+   CLANG_ENABLE_MODULES = YES;
+   CLANG_ENABLE_OBJC_ARC = YES;
+   CURRENT_PROJECT_VERSION = 3;
+   GENERATE_INFOPLIST_FILE = NO;
+   INFOPLIST_FILE = EquicordApp/Info.plist;
+   IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+   PRODUCT_BUNDLE_IDENTIFIER = com.kingtweak69.EquicordApp;
+   PRODUCT_NAME = "$(TARGET_NAME)";
+   SDKROOT = iphoneos;
+   SWIFT_VERSION = 5.0;
+   TARGETED_DEVICE_FAMILY = "1,2";
+  };
+  name = Release;
+ };
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+ 8CA2C6A7369848A7A6D63408 /* Build configuration list for PBXProject "EquicordApp" */ = {
+  isa = XCConfigurationList;
+  buildConfigurations = (
+   0F8B51B63C0F4002814DD81B /* Debug */,
+   734D00659E244AC687C47E9C /* Release */,
+  );
+  defaultConfigurationIsVisible = 0;
+  defaultConfigurationName = Release;
+ };
+ DB8F78D262114FC5A9104AC7 /* Build configuration list for PBXNativeTarget "EquicordApp" */ = {
+  isa = XCConfigurationList;
+  buildConfigurations = (
+   EEB4F6E74F764E109733882F /* Debug */,
+   8C6B46E303794CBCAFEE7BE1 /* Release */,
+  );
+  defaultConfigurationIsVisible = 0;
+  defaultConfigurationName = Release;
+ };
+/* End XCConfigurationList section */
+
+ };
+ rootObject = 554C0EDDA5D2467B8F3D12C7 /* Project object */;
+}
