@@ -61,7 +61,7 @@
     }
 
     /* Channel/server drawer: hidden by default on narrow layouts. */
-    @media (max-width: 700px) {
+    @media (max-width: 1400px) {
       [class*="guilds"] {
         position: fixed !important;
         z-index: 10003 !important;
