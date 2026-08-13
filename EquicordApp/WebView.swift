@@ -35,7 +35,6 @@ struct EquicordWebView: UIViewRepresentable {
         // Discord refuses to serve its web client to mobile user agents and
         // only renders the QR login on the desktop layout. Requesting desktop
         // content mode swaps in a macOS Safari UA and desktop viewport.
-        preferences.preferredContentMode = .desktop
         configuration.defaultWebpagePreferences = preferences
 
         let webView = WKWebView(frame: .zero, configuration: configuration)
