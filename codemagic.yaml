@@ -33,20 +33,49 @@ workflows:
           set -euo pipefail
           xcode-project use-profiles
 
-      - name: Build signed IPA
+      - name: Build archive
         script: |
           set -euo pipefail
           cd "$CM_BUILD_DIR"
-          xcodebuild             -project EquicordApp.xcodeproj             -scheme EquicordApp             -configuration Release             -sdk iphoneos             -archivePath "$CM_BUILD_DIR/build/EquicordApp.xcarchive"             clean archive
 
-          xcodebuild             -exportArchive             -archivePath "$CM_BUILD_DIR/build/EquicordApp.xcarchive"             -exportPath "$CM_BUILD_DIR/ipa"             -exportOptionsPlist "$HOME/export_options.plist"
+          rm -rf build/EquicordApp.xcarchive build/ipa
+          mkdir -p build/ipa
 
-          test -f "$CM_BUILD_DIR/ipa/EquicordApp.ipa"
+          xcodebuild \
+            -project EquicordApp.xcodeproj \
+            -scheme EquicordApp \
+            -configuration Release \
+            -sdk iphoneos \
+            -archivePath "$CM_BUILD_DIR/build/EquicordApp.xcarchive" \
+            clean archive
+
+          test -d "$CM_BUILD_DIR/build/EquicordApp.xcarchive"
+
+      - name: Export IPA
+        script: |
+          set -euo pipefail
+          cd "$CM_BUILD_DIR"
+
+          xcodebuild \
+            -exportArchive \
+            -archivePath "$CM_BUILD_DIR/build/EquicordApp.xcarchive" \
+            -exportPath "$CM_BUILD_DIR/build/ipa" \
+            -exportOptionsPlist "$HOME/export_options.plist"
+
+          IPA_PATH="$(find "$CM_BUILD_DIR/build/ipa" -maxdepth 1 -type f -name '*.ipa' -print -quit)"
+
+          test -n "$IPA_PATH"
+
+          cp "$IPA_PATH" "$CM_BUILD_DIR/build/ipa/EquicordApp.ipa"
+
+          echo "IPA created:"
+          ls -lh "$CM_BUILD_DIR/build/ipa/EquicordApp.ipa"
 
     artifacts:
-      - ipa/*.ipa
+      - build/ipa/EquicordApp.ipa
       - build/EquicordApp.xcarchive
       - build/Build/**/*.app
+
 
   ios-equicord-unsigned:
     name: Equicord iOS (unsigned CI check)
@@ -75,7 +104,17 @@ workflows:
         script: |
           set -euo pipefail
           cd "$CM_BUILD_DIR"
-          xcodebuild             -project EquicordApp.xcodeproj             -scheme EquicordApp             -configuration Release             -sdk iphoneos             -derivedDataPath "$CM_BUILD_DIR/build"             CODE_SIGNING_ALLOWED=NO             CODE_SIGNING_REQUIRED=NO             CODE_SIGN_IDENTITY=""             clean build
+
+          xcodebuild \
+            -project EquicordApp.xcodeproj \
+            -scheme EquicordApp \
+            -configuration Release \
+            -sdk iphoneos \
+            -derivedDataPath "$CM_BUILD_DIR/build" \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            clean build
 
           test -d "$CM_BUILD_DIR/build/Build/Products/Release-iphoneos/EquicordApp.app"
 
