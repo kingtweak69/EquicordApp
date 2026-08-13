@@ -4,9 +4,10 @@ import AuthenticationServices
 
 struct EquicordWebView: UIViewRepresentable {
     let url: URL
+    var onPasskeySupport: ((Bool) -> Void)? = nil
 
     func makeCoordinator() -> Coordinator {
-        Coordinator()
+        Coordinator(onPasskeySupport: onPasskeySupport)
     }
 
     func makeUIView(context: Context) -> WKWebView {
@@ -31,6 +32,10 @@ struct EquicordWebView: UIViewRepresentable {
 
         let preferences = WKWebpagePreferences()
         preferences.allowsContentJavaScript = true
+        // Discord refuses to serve its web client to mobile user agents and
+        // only renders the QR login on the desktop layout. Requesting desktop
+        // content mode swaps in a macOS Safari UA and desktop viewport.
+        preferences.preferredContentMode = .desktop
         configuration.defaultWebpagePreferences = preferences
 
         let webView = WKWebView(frame: .zero, configuration: configuration)
@@ -38,8 +43,10 @@ struct EquicordWebView: UIViewRepresentable {
         webView.navigationDelegate = context.coordinator
         webView.uiDelegate = context.coordinator
 
-        // Let Discord see the real iOS/WebKit environment so WebAuthn can use
-        // WebKit's native authentication path.
+        // Do not hand-roll a UA string here — preferredContentMode above
+        // already handles it. Note this does NOT enable WebAuthn: WebKit gates
+        // that on the web browser public key credential entitlement, not the
+        // user agent.
         webView.customUserAgent = nil
 
         webView.allowsBackForwardNavigationGestures = true
@@ -71,9 +78,16 @@ struct EquicordWebView: UIViewRepresentable {
     final class Coordinator: NSObject, WKNavigationDelegate, WKUIDelegate {
         weak var webView: WKWebView?
         private var observer: NSObjectProtocol?
+        private var hasProbedWebAuthn = false
+        private let onPasskeySupport: ((Bool) -> Void)?
 
         @available(iOS 18.0, *)
         private lazy var passkeyManager = ASAuthorizationWebBrowserPublicKeyCredentialManager()
+
+        init(onPasskeySupport: ((Bool) -> Void)? = nil) {
+            self.onPasskeySupport = onPasskeySupport
+            super.init()
+        }
 
         func startListening() {
             guard observer == nil else { return }
@@ -100,7 +114,7 @@ struct EquicordWebView: UIViewRepresentable {
 
             if #available(iOS 26.2, *) {
                 guard ASAuthorizationWebBrowserPublicKeyCredentialManager.isDeviceConfiguredForPasskeys else {
-                    print("Equicord: this device is not configured for passkeys")
+                    print("Equicord: device is not configured for passkeys")
                     return
                 }
             }
@@ -128,6 +142,46 @@ struct EquicordWebView: UIViewRepresentable {
             @unknown default:
                 print("Equicord: unknown passkey authorization state")
             }
+        }
+
+        // WebKit only injects the WebAuthn interfaces when the host app is
+        // entitled. Probing for them is the only reliable way to know whether
+        // passkey sign-in can actually succeed in this build.
+        private func probeWebAuthnSupport() {
+            guard !hasProbedWebAuthn, let webView else { return }
+            hasProbedWebAuthn = true
+
+            let probe = """
+            (function () {
+              return typeof window.PublicKeyCredential !== 'undefined'
+                  && !!(navigator.credentials && navigator.credentials.get);
+            })();
+            """
+
+            webView.evaluateJavaScript(probe) { [weak self] result, _ in
+                let supported = (result as? Bool) ?? false
+
+                if supported {
+                    print("Equicord: WebAuthn is available — passkey sign-in should work")
+                } else {
+                    print("""
+                    Equicord: WebAuthn is NOT available in this WKWebView.
+                    This build does not carry an Apple-issued profile with
+                    com.apple.developer.web-browser.public-key-credential, so
+                    Discord will not offer passkey sign-in. Use password + 2FA,
+                    or scan the QR code on the login page with the official
+                    Discord app on another device.
+                    """)
+                }
+
+                DispatchQueue.main.async {
+                    self?.onPasskeySupport?(supported)
+                }
+            }
+        }
+
+        func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+            probeWebAuthnSupport()
         }
 
         func webView(
