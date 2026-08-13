@@ -41,7 +41,6 @@ struct EquicordWebView: UIViewRepresentable {
         // Let Discord see the real iOS/WebKit environment so WebAuthn can use
         // WebKit's native authentication path.
         webView.customUserAgent = nil
-        webView.applicationNameForUserAgent = "EquicordApp/1.0"
 
         webView.allowsBackForwardNavigationGestures = true
         webView.scrollView.contentInsetAdjustmentBehavior = .never
@@ -98,9 +97,12 @@ struct EquicordWebView: UIViewRepresentable {
 
         func requestPasskeyAccessIfAvailable() {
             guard #available(iOS 18.0, *) else { return }
-            guard ASAuthorizationWebBrowserPublicKeyCredentialManager.isDeviceConfiguredForPasskeys else {
-                print("Equicord: this device is not configured for passkeys")
-                return
+
+            if #available(iOS 26.2, *) {
+                guard ASAuthorizationWebBrowserPublicKeyCredentialManager.isDeviceConfiguredForPasskeys else {
+                    print("Equicord: this device is not configured for passkeys")
+                    return
+                }
             }
 
             switch passkeyManager.authorizationStateForPlatformCredentials {
