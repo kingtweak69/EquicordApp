@@ -33,48 +33,41 @@ workflows:
           set -euo pipefail
           xcode-project use-profiles
 
-      - name: Build archive
+      - name: Build signed IPA
         script: |
           set -euo pipefail
           cd "$CM_BUILD_DIR"
 
-          rm -rf build/EquicordApp.xcarchive build/ipa
-          mkdir -p build/ipa
+          rm -rf "$CM_BUILD_DIR/build/EquicordApp.xcarchive"
+          rm -rf "$CM_BUILD_DIR/build/ipa"
+          mkdir -p "$CM_BUILD_DIR/build/ipa"
 
-          xcodebuild \
-            -project EquicordApp.xcodeproj \
-            -scheme EquicordApp \
-            -configuration Release \
-            -sdk iphoneos \
-            -archivePath "$CM_BUILD_DIR/build/EquicordApp.xcarchive" \
-            clean archive
-
-          test -d "$CM_BUILD_DIR/build/EquicordApp.xcarchive"
-
-      - name: Export IPA
-        script: |
-          set -euo pipefail
-          cd "$CM_BUILD_DIR"
-
-          xcodebuild \
-            -exportArchive \
-            -archivePath "$CM_BUILD_DIR/build/EquicordApp.xcarchive" \
-            -exportPath "$CM_BUILD_DIR/build/ipa" \
-            -exportOptionsPlist "$HOME/export_options.plist"
+          xcode-project build-ipa \
+            --project "EquicordApp.xcodeproj" \
+            --scheme "EquicordApp" \
+            --archive-path "$CM_BUILD_DIR/build/EquicordApp.xcarchive" \
+            --ipa-directory "$CM_BUILD_DIR/build/ipa"
 
           IPA_PATH="$(find "$CM_BUILD_DIR/build/ipa" -maxdepth 1 -type f -name '*.ipa' -print -quit)"
 
-          test -n "$IPA_PATH"
+          if [ -z "$IPA_PATH" ]; then
+            echo "ERROR: No IPA was produced."
+            find "$CM_BUILD_DIR/build" -maxdepth 3 -type f -print
+            exit 1
+          fi
 
-          cp "$IPA_PATH" "$CM_BUILD_DIR/build/ipa/EquicordApp.ipa"
+          if [ "$IPA_PATH" != "$CM_BUILD_DIR/build/ipa/EquicordApp.ipa" ]; then
+            cp "$IPA_PATH" "$CM_BUILD_DIR/build/ipa/EquicordApp.ipa"
+          fi
 
-          echo "IPA created:"
+          echo "========================================"
+          echo "IPA CREATED:"
           ls -lh "$CM_BUILD_DIR/build/ipa/EquicordApp.ipa"
+          echo "========================================"
 
     artifacts:
-      - build/ipa/EquicordApp.ipa
+      - build/ipa/*.ipa
       - build/EquicordApp.xcarchive
-      - build/Build/**/*.app
 
 
   ios-equicord-unsigned:
